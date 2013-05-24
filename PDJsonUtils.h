@@ -6,6 +6,10 @@
 //  Copyright (c) 2011 GO1 Pty Ltd. All rights reserved.
 //
 
+#ifndef SITE_URL
+#define SITE_URL @""
+#endif
+
 #import <Foundation/Foundation.h>
 
 @interface PDJsonUtils : NSObject

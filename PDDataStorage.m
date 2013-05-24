@@ -9,7 +9,7 @@
 #import "PDDataStorage.h"
 #import "PDUtilities.h"
 
-#define kFilename = @"PDDataStorage"
+#define kFilename @"PDDataStorage"
 
 // ref: http://www.duckrowing.com/2010/05/21/using-the-singleton-pattern-in-objective-c/
 

@@ -173,10 +173,10 @@ static PDUtilities* sharedInstance = nil;
     [request setHTTPMethod:httpMethod];
     if (args && multipart)
     {
-        NSData* reqData = [WDTransfer dataForMultipartPOSTWithDictionary:args boundary:@"_gpslog-42398453985984598452_"];
-        [request addValue: @"multipart/form-data; boundary=_gpslog-42398453985984598452_" forHTTPHeaderField: @"Content-Type"];
-        [request setValue:[NSString stringWithFormat:@"%i", [reqData length]] forHTTPHeaderField:@"Content-Length"];
-        [request setHTTPBody:reqData];
+//        NSData* reqData = [WDTransfer dataForMultipartPOSTWithDictionary:args boundary:@"_gpslog-42398453985984598452_"];
+//        [request addValue: @"multipart/form-data; boundary=_gpslog-42398453985984598452_" forHTTPHeaderField: @"Content-Type"];
+//        [request setValue:[NSString stringWithFormat:@"%i", [reqData length]] forHTTPHeaderField:@"Content-Length"];
+//        [request setHTTPBody:reqData];
     }
     else
     {
@@ -554,72 +554,6 @@ CGImageRef CopyImageAndAddAlphaChannel(CGImageRef sourceImage) {
 	CGColorSpaceRelease(colorSpace);
 	
 	return retVal;
-}
-
-+ (UIImage*)maskImage:(UIImage *)image withMask:(UIImage *)maskImage {
-	CGImageRef maskRef = maskImage.CGImage;
-	CGImageRef mask = CGImageMaskCreate(CGImageGetWidth(maskRef),
-                                        CGImageGetHeight(maskRef),
-                                        CGImageGetBitsPerComponent(maskRef),
-                                        CGImageGetBitsPerPixel(maskRef),
-                                        CGImageGetBytesPerRow(maskRef),
-                                        CGImageGetDataProvider(maskRef), NULL, false);
-	
-	CGImageRef sourceImage = [image CGImage];
-	CGImageRef imageWithAlpha = sourceImage;
-	//add alpha channel for images that don't have one (ie GIF, JPEG, etc...)
-	//this however has a computational cost
-	if (CGImageGetAlphaInfo(sourceImage) == kCGImageAlphaNone) { 
-		imageWithAlpha = CopyImageAndAddAlphaChannel(sourceImage);
-	}
-	
-	CGImageRef masked = CGImageCreateWithMask(imageWithAlpha, mask);
-	CGImageRelease(mask);
-	
-	//release imageWithAlpha if it was created by CopyImageAndAddAlphaChannel
-	if (sourceImage != imageWithAlpha) {
-		CGImageRelease(imageWithAlpha);
-	}
-	
-	UIImage* retImage = [UIImage imageWithCGImage:masked];
-	CGImageRelease(masked);
-	
-	return retImage;
-}
-
-+ (UIImage*) maskImage:(UIImage *)image andResizeMask:(UIImage *)maskImage
-{
-    //DBG_ASSERT(maskImage.size.height >= image.size.height, @"mask image must be bigger or same height as original image");
-    // crop the mask to the correct size.
-    CGSize imageSize = CGSizeMake(image.size.width * image.scale, image.size.height * image.scale);
-    CGSize maskSize = CGSizeMake(maskImage.size.width * maskImage.scale, maskImage.size.height * maskImage.scale);
-    
-    UIImage* maskedImage = nil;
-    if (imageSize.height == maskSize.height && imageSize.width == maskSize.width)
-    {
-        maskedImage = [PDUtilities maskImage:image withMask:maskImage];
-    }
-    else
-    {
-        //resize mask in width too..
-        
-        if (maskSize.width != imageSize.width)
-        {
-            CGFloat aspectRatio = maskSize.height / maskSize.width;
-            CGSize targetSize = CGSizeMake(imageSize.width, imageSize.width * aspectRatio);
-            maskImage = [Util resizeImage:maskImage targetSize:targetSize mode:RESIZE_FIT];
-        }
-                
-        CGRect maskRect;
-        maskRect.size.width = imageSize.width;
-        maskRect.size.height = imageSize.height;
-        maskRect.origin.x = 0;
-        maskRect.origin.y = 0;
-        LogRect(maskRect);
-        UIImage* mask = [Util cropImage:maskImage rect:maskRect];
-        maskedImage = [PDUtilities maskImage:image withMask:mask];
-    }
-    return maskedImage;
 }
 
 //Constants
