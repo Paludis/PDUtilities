@@ -7,8 +7,6 @@
 //
 
 #import "PDMemCache.h"
-#import "Util.h"
-#import "WDMemoryUtil.h"
 
 static PDMemCache* sharedInstance = nil;
 
@@ -28,9 +26,7 @@ static PDMemCache* sharedInstance = nil;
 
 - (void) clearCache
 {
-    DLog(@"CLEAR CACHE. Objects before: %d. Free mem before: %f", [cache count], [WDMemoryUtil get_free_memory_mb]);
     [cache removeAllObjects];
-    DLog(@"CLEAR CACHE. Objects after: %d. Free mem after: %f", [cache count], [WDMemoryUtil get_free_memory_mb]);
 }
 
 + (id)allocWithZone:(NSZone *)zone
