@@ -9,6 +9,8 @@
 #import "PDDataStorage.h"
 #import "PDUtilities.h"
 
+#define kFilename = @"PDDataStorage"
+
 // ref: http://www.duckrowing.com/2010/05/21/using-the-singleton-pattern-in-objective-c/
 
 static PDDataStorage* sharedInstance = nil;
@@ -22,7 +24,7 @@ static PDDataStorage* sharedInstance = nil;
     {
         // Initialization code here.
         
-        storageDict = [NSKeyedUnarchiver unarchiveObjectWithFile:[PDUtilities getFilePathForFileInDocumentsDirectory:@"DataStorage"]];
+        storageDict = [NSKeyedUnarchiver unarchiveObjectWithFile:[PDUtilities getFilePathForFileInDocumentsDirectory:kFilename]];
         
         if (storageDict == nil){
             storageDict = [NSMutableDictionary new];
@@ -89,7 +91,7 @@ static PDDataStorage* sharedInstance = nil;
 
 - (void) save
 {
-    NSString* path = [PDUtilities getFilePathForFileInDocumentsDirectory:@"DataStorage"];
+    NSString* path = [PDUtilities getFilePathForFileInDocumentsDirectory:kFilename];
     [NSKeyedArchiver archiveRootObject:storageDict toFile:path];
 }
 
