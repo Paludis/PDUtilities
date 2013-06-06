@@ -56,12 +56,10 @@
 + (UIImage*) maskImage:(UIImage *)image andResizeMask:(UIImage *)maskImage;
 + (NSString*)timeIntervalStringWithStartDate:(NSDate*)d1 withEndDate:(NSDate*)d2;
 + (int) convertFloatToEvenInt:(CGFloat)float_num;
-+ (void) zoomMapToUserLocation:(WDMapView*)mapView;
-+ (void)zoomMapToFitAnnotations:(WDMapView*)mapView horizontalPadding:(float) horizontalPadding verticalPadding:(float) verticalPadding animated:(BOOL)animated;
 + (NSDictionary *)parseURLParams:(NSString *)query;
-+ (void) centerView:(UIView *)view horizontallyInFrame:(CGRect)frame;
-+ (void) centerView:(UIView *)view verticallyInFrame:(CGRect)frame;
-+ (void) centerView:(UIView*)view inFrame:(CGRect)frame;
++ (void) centerView:(UIView *)view horizontallyInView:(UIView*)view2;
++ (void) centerView:(UIView *)view verticallyInView:(UIView*)view2;
++ (void) centerView:(UIView*)view inView:(UIView*)view2;
 + (CGRect) centerRect:(CGRect)rect inRect:(CGRect)parentRect;
 + (NSDictionary*) getArgsDictionaryFromPOSTMethodsString:(NSString*)string;
 + (NSString*) sendRequestReturningStringToPath:(NSString*)path withArgs:(NSDictionary*) args method:(NSString*)httpMethod;

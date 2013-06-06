@@ -65,7 +65,7 @@
 
 + (void)zoomMapToFitAnnotations:(MKMapView*)mapView
 {
-    [self zoomMapToFitAnnotations:mapView horizontalPadding:1.2 verticalPadding:1.2 animated:YES];
+    [self zoomMapToFitAnnotations:mapView horizontalPadding:1.2 verticalPadding:1.2 minimumLatitudeSpan:0 animated:YES];
 }
 
 + (void) zoomMapToUserLocation:(MKMapView*)mapView
