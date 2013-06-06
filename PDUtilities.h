@@ -55,6 +55,7 @@
 + (NSString *) returnMD5Hash:(NSString*)concat;
 + (void)resizeFontForLabel:(UILabel*)aLabel maxSize:(int)maxSize minSize:(int)minSize;
 + (NSString*) getFilePathForFileInDocumentsDirectory:(NSString*)filename;
++ (NSMutableURLRequest*) getURLRequestForPath:(NSString*)path args:(NSDictionary*)args method:(NSString*)httpMethod;
 + (NSString*) sendRequestReturningStringToPath:(NSString*)path withArgs:(NSDictionary*) args;
 + (NSString *)generateSHA256Hash:(NSString *)inputString usingKey:(NSString*)key;
 + (NSString*)stringWithHexBytes:(NSData *)theData;
@@ -72,17 +73,17 @@
 + (NSMutableURLRequest*) getURLRequestForPath:(NSString*)path args:(NSDictionary*)args method:(NSString*)httpMethod;
 + (NSMutableURLRequest*) getURLRequestForURL:(NSString*)url args:(NSDictionary*)args method:(NSString*)httpMethod useMultipart:(BOOL)multipart;
 + (NSString*) truncateString:(NSString*)string toLength:(int)length;
-+ (void)zoomMapToFitAnnotations:(MKMapView*)mapView;
 + (NSString*) getLocalizedDateStringForDate:(NSDate*)date;
 + (void) showComingSoonAlert;
 + (NSString*)timeIntervalStringWithStartDate:(NSDate*)d1 withEndDate:(NSDate*)d2;
 + (int) convertFloatToEvenInt:(CGFloat)float_num;
-+ (void) zoomMapToUserLocation:(MKMapView*)mapView;
-+ (void)zoomMapToFitAnnotations:(MKMapView*)mapView horizontalPadding:(float) horizontalPadding verticalPadding:(float) verticalPadding animated:(BOOL)animated;
 + (NSDictionary *)parseURLParams:(NSString *)query;
 + (void) centerView:(UIView *)view horizontallyInFrame:(CGRect)frame;
 + (void) centerView:(UIView *)view verticallyInFrame:(CGRect)frame;
 + (void) centerView:(UIView*)view inFrame:(CGRect)frame;
++ (void) centerView:(UIView *)view horizontallyInView:(UIView*)view2;
++ (void) centerView:(UIView *)view verticallyInView:(UIView*)view2;
++ (void) centerView:(UIView*)view inView:(UIView*)view2;
 + (CGRect) centerRect:(CGRect)rect inRect:(CGRect)parentRect;
 + (NSDictionary*) getArgsDictionaryFromPOSTMethodsString:(NSString*)string;
 

@@ -458,71 +458,7 @@ static PDUtilities* sharedInstance = nil;
     }
 }
 
-// ref: http://codisllc.com/blog/zoom-mkmapview-to-fit-annotations/
 
-+ (void)zoomMapToFitAnnotations:(MKMapView*)mapView horizontalPadding:(float) horizontalPadding verticalPadding:(float) verticalPadding animated:(BOOL)animated
-{
-    if ([mapView.annotations count] == 0)
-    {
-        return;
-    }
-    
-    CLLocationCoordinate2D topLeftCoord;
-    topLeftCoord.latitude = -90;
-    topLeftCoord.longitude = 180;
-    
-    CLLocationCoordinate2D bottomRightCoord;
-    bottomRightCoord.latitude = 90;
-    bottomRightCoord.longitude = -180;
-    
-    for(id<MKAnnotation> annotation in mapView.annotations)
-    {
-        topLeftCoord.longitude = fmin(topLeftCoord.longitude, annotation.coordinate.longitude);
-        topLeftCoord.latitude = fmax(topLeftCoord.latitude, annotation.coordinate.latitude);
-        
-        bottomRightCoord.longitude = fmax(bottomRightCoord.longitude, annotation.coordinate.longitude);
-        bottomRightCoord.latitude = fmin(bottomRightCoord.latitude, annotation.coordinate.latitude);
-    }
-    
-    MKCoordinateRegion region;
-    region.center.latitude = topLeftCoord.latitude - (topLeftCoord.latitude - bottomRightCoord.latitude) * 0.5;
-    region.center.longitude = topLeftCoord.longitude + (bottomRightCoord.longitude - topLeftCoord.longitude) * 0.5;
-    
-    if (mapView.annotations.count == 1)
-    {
-        // if there's only a single annotation we want to be zoomed further out.
-        verticalPadding = 1.5;
-        horizontalPadding = 1.5;
-    }
-    
-    // add padding at the sides
-    region.span.latitudeDelta = MIN(180, fabs(topLeftCoord.latitude - bottomRightCoord.latitude) * verticalPadding);
-    region.span.longitudeDelta = MIN(180, fabs(bottomRightCoord.longitude - topLeftCoord.longitude) * horizontalPadding);
-    
-    region = [mapView regionThatFits:region];
-    
-    // make sure we don't have an invalid region.
-    region.span.latitudeDelta = MIN(180, region.span.latitudeDelta);
-    region.span.longitudeDelta = MIN(180, region.span.longitudeDelta);
-    
-    [mapView setRegion:region animated:animated];
-}
-
-+ (void)zoomMapToFitAnnotations:(MKMapView*)mapView 
-{
-    [self zoomMapToFitAnnotations:mapView horizontalPadding:1.2 verticalPadding:1.2 animated:YES];
-}
-
-+ (void) zoomMapToUserLocation:(MKMapView*)mapView
-{
-    if (mapView.userLocation.location)
-    {
-        MKCoordinateRegion region;
-        region.center = mapView.userLocation.coordinate;
-        region = [mapView regionThatFits:region];
-        [mapView setRegion:region animated:YES];
-    }
-}
 
 + (NSString*) getLocalizedDateStringForDate:(NSDate*)date
 {
@@ -678,22 +614,22 @@ CGImageRef CopyImageAndAddAlphaChannel(CGImageRef sourceImage) {
     return rect;
 }
 
-+ (void) centerView:(UIView *)view horizontallyInView:(UIView*)view
++ (void) centerView:(UIView *)view horizontallyInView:(UIView*)view2
 {
-    CGRect newFrame = [self centerRect:view.frame horizontallyInRect:view.frame];
+    CGRect newFrame = [self centerRect:view.frame horizontallyInRect:view2.frame];
     view.frame = newFrame;
 }
 
-+ (void) centerView:(UIView *)view verticallyInView:(UIView*)view
++ (void) centerView:(UIView *)view verticallyInView:(UIView*)view2
 {
-    CGRect newFrame = [self centerRect:view.frame verticallyInRect:view.frame];
+    CGRect newFrame = [self centerRect:view.frame verticallyInRect:view2.frame];
     view.frame = newFrame;
 }
 
-+ (void) centerView:(UIView*)view inView:(UIView*)view
++ (void) centerView:(UIView*)view inView:(UIView*)view2
 {
-    [self centerView:view horizontallyInView:view];
-    [self centerView:view verticallyInView:view];
+    [self centerView:view horizontallyInView:view2];
+    [self centerView:view verticallyInView:view2];
 }
 
 + (CGRect) centerRect:(CGRect)rect inRect:(CGRect)parentRect
