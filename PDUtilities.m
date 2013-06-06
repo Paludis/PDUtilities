@@ -8,6 +8,10 @@
 
 #import "PDUtilities.h"
 #import <CommonCrypto/CommonHMAC.h>
+#import "Common.h"
+#import "WDTransfer.h"
+#import "Util.h"
+#import "Serializer.h"
 
 static PDUtilities* sharedInstance = nil;
 
@@ -135,6 +139,8 @@ static PDUtilities* sharedInstance = nil;
 
     NSURLRequest* request = [self getURLRequestForPath:path args:args method:httpMethod];
     
+    DLog(@"request URL: %@", request.URL.absoluteString);
+    
     NSData* urlData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
     return urlData;
 }
@@ -173,10 +179,10 @@ static PDUtilities* sharedInstance = nil;
     [request setHTTPMethod:httpMethod];
     if (args && multipart)
     {
-//        NSData* reqData = [WDTransfer dataForMultipartPOSTWithDictionary:args boundary:@"_gpslog-42398453985984598452_"];
-//        [request addValue: @"multipart/form-data; boundary=_gpslog-42398453985984598452_" forHTTPHeaderField: @"Content-Type"];
-//        [request setValue:[NSString stringWithFormat:@"%i", [reqData length]] forHTTPHeaderField:@"Content-Length"];
-//        [request setHTTPBody:reqData];
+        NSData* reqData = [WDTransfer dataForMultipartPOSTWithDictionary:args boundary:@"_gpslog-42398453985984598452_"];
+        [request addValue: @"multipart/form-data; boundary=_gpslog-42398453985984598452_" forHTTPHeaderField: @"Content-Type"];
+        [request setValue:[NSString stringWithFormat:@"%i", [reqData length]] forHTTPHeaderField:@"Content-Length"];
+        [request setHTTPBody:reqData];
     }
     else
     {
@@ -191,15 +197,20 @@ static PDUtilities* sharedInstance = nil;
 
 + (NSMutableURLRequest*) getURLRequestForPath:(NSString*)path args:(NSDictionary*)args method:(NSString*)httpMethod {
     
-    NSString* fullURL = [NSString stringWithFormat:SITE_URL@"/%@", [path stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+    NSString* fullURL = [path stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     return [self getURLRequestForURL:fullURL args:args method:httpMethod useMultipart:YES];
+}
+
++ (NSString*) sendRequestReturningStringToPath:(NSString*)path withArgs:(NSDictionary*) args method:(NSString*)httpMethod
+{
+    NSData* data = [self sendRequestToPath:path withArgs:args method:httpMethod];
+    NSString* response = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    return response;
 }
 
 + (NSString*) sendRequestReturningStringToPath:(NSString*)path withArgs:(NSDictionary*) args
 {
-    NSData* data = [self sendRequestToPath:path withArgs:args method:@"POST"];
-    NSString* response = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    return response;
+    return [self sendRequestReturningStringToPath:path withArgs:args method:@"POST"];
 }
 
 + (NSDictionary*) getArgsDictionaryFromPOSTMethodsString:(NSString*)string
@@ -458,7 +469,71 @@ static PDUtilities* sharedInstance = nil;
     }
 }
 
+// ref: http://codisllc.com/blog/zoom-mkmapview-to-fit-annotations/
 
++ (void)zoomMapToFitAnnotations:(WDMapView*)mapView horizontalPadding:(float) horizontalPadding verticalPadding:(float) verticalPadding animated:(BOOL)animated
+{
+    if ([mapView.annotations count] == 0)
+    {
+        return;
+    }
+    
+    CLLocationCoordinate2D topLeftCoord;
+    topLeftCoord.latitude = -90;
+    topLeftCoord.longitude = 180;
+    
+    CLLocationCoordinate2D bottomRightCoord;
+    bottomRightCoord.latitude = 90;
+    bottomRightCoord.longitude = -180;
+    
+    for(id<MKAnnotation> annotation in mapView.annotations)
+    {
+        topLeftCoord.longitude = fmin(topLeftCoord.longitude, annotation.coordinate.longitude);
+        topLeftCoord.latitude = fmax(topLeftCoord.latitude, annotation.coordinate.latitude);
+        
+        bottomRightCoord.longitude = fmax(bottomRightCoord.longitude, annotation.coordinate.longitude);
+        bottomRightCoord.latitude = fmin(bottomRightCoord.latitude, annotation.coordinate.latitude);
+    }
+    
+    MKCoordinateRegion region;
+    region.center.latitude = topLeftCoord.latitude - (topLeftCoord.latitude - bottomRightCoord.latitude) * 0.5;
+    region.center.longitude = topLeftCoord.longitude + (bottomRightCoord.longitude - topLeftCoord.longitude) * 0.5;
+    
+    if (mapView.annotations.count == 1)
+    {
+        // if there's only a single annotation we want to be zoomed further out.
+        verticalPadding = 1.5;
+        horizontalPadding = 1.5;
+    }
+    
+    // add padding at the sides
+    region.span.latitudeDelta = MIN(180, fabs(topLeftCoord.latitude - bottomRightCoord.latitude) * verticalPadding);
+    region.span.longitudeDelta = MIN(180, fabs(bottomRightCoord.longitude - topLeftCoord.longitude) * horizontalPadding);
+    
+    region = [mapView regionThatFits:region];
+    
+    // make sure we don't have an invalid region.
+    region.span.latitudeDelta = MIN(180, region.span.latitudeDelta);
+    region.span.longitudeDelta = MIN(180, region.span.longitudeDelta);
+    
+    [mapView setRegion:region animated:animated];
+}
+
++ (void)zoomMapToFitAnnotations:(WDMapView*)mapView 
+{
+    [self zoomMapToFitAnnotations:mapView horizontalPadding:1.2 verticalPadding:1.2 animated:YES];
+}
+
++ (void) zoomMapToUserLocation:(MKMapView*)mapView
+{
+    if (mapView.userLocation.location)
+    {
+        MKCoordinateRegion region;
+        region.center = mapView.userLocation.coordinate;
+        region = [mapView regionThatFits:region];
+        [mapView setRegion:region animated:YES];
+    }
+}
 
 + (NSString*) getLocalizedDateStringForDate:(NSDate*)date
 {
@@ -467,6 +542,11 @@ static PDUtilities* sharedInstance = nil;
     NSString *format = [NSDateFormatter dateFormatFromTemplate:dateComponents options:0 locale:[NSLocale currentLocale]];
     [dateFormatter setDateFormat:format];
     return [dateFormatter stringFromDate:date];
+}
+
++ (void) showComingSoonAlert
+{
+    [self showAlertWithTitle:@"Coming Soon!" message:@"This feature will be in the beta soon."];
 }
 
 CGImageRef CopyImageAndAddAlphaChannel(CGImageRef sourceImage) {
@@ -490,6 +570,72 @@ CGImageRef CopyImageAndAddAlphaChannel(CGImageRef sourceImage) {
 	CGColorSpaceRelease(colorSpace);
 	
 	return retVal;
+}
+
++ (UIImage*)maskImage:(UIImage *)image withMask:(UIImage *)maskImage {
+	CGImageRef maskRef = maskImage.CGImage;
+	CGImageRef mask = CGImageMaskCreate(CGImageGetWidth(maskRef),
+                                        CGImageGetHeight(maskRef),
+                                        CGImageGetBitsPerComponent(maskRef),
+                                        CGImageGetBitsPerPixel(maskRef),
+                                        CGImageGetBytesPerRow(maskRef),
+                                        CGImageGetDataProvider(maskRef), NULL, false);
+	
+	CGImageRef sourceImage = [image CGImage];
+	CGImageRef imageWithAlpha = sourceImage;
+	//add alpha channel for images that don't have one (ie GIF, JPEG, etc...)
+	//this however has a computational cost
+	if (CGImageGetAlphaInfo(sourceImage) == kCGImageAlphaNone) { 
+		imageWithAlpha = CopyImageAndAddAlphaChannel(sourceImage);
+	}
+	
+	CGImageRef masked = CGImageCreateWithMask(imageWithAlpha, mask);
+	CGImageRelease(mask);
+	
+	//release imageWithAlpha if it was created by CopyImageAndAddAlphaChannel
+	if (sourceImage != imageWithAlpha) {
+		CGImageRelease(imageWithAlpha);
+	}
+	
+	UIImage* retImage = [UIImage imageWithCGImage:masked];
+	CGImageRelease(masked);
+	
+	return retImage;
+}
+
++ (UIImage*) maskImage:(UIImage *)image andResizeMask:(UIImage *)maskImage
+{
+    //DBG_ASSERT(maskImage.size.height >= image.size.height, @"mask image must be bigger or same height as original image");
+    // crop the mask to the correct size.
+    CGSize imageSize = CGSizeMake(image.size.width * image.scale, image.size.height * image.scale);
+    CGSize maskSize = CGSizeMake(maskImage.size.width * maskImage.scale, maskImage.size.height * maskImage.scale);
+    
+    UIImage* maskedImage = nil;
+    if (imageSize.height == maskSize.height && imageSize.width == maskSize.width)
+    {
+        maskedImage = [PDUtilities maskImage:image withMask:maskImage];
+    }
+    else
+    {
+        //resize mask in width too..
+        
+        if (maskSize.width != imageSize.width)
+        {
+            CGFloat aspectRatio = maskSize.height / maskSize.width;
+            CGSize targetSize = CGSizeMake(imageSize.width, imageSize.width * aspectRatio);
+            maskImage = [Util resizeImage:maskImage targetSize:targetSize mode:RESIZE_FIT];
+        }
+                
+        CGRect maskRect;
+        maskRect.size.width = imageSize.width;
+        maskRect.size.height = imageSize.height;
+        maskRect.origin.x = 0;
+        maskRect.origin.y = 0;
+        LogRect(maskRect);
+        UIImage* mask = [Util cropImage:maskImage rect:maskRect];
+        maskedImage = [PDUtilities maskImage:image withMask:mask];
+    }
+    return maskedImage;
 }
 
 //Constants
@@ -614,22 +760,22 @@ CGImageRef CopyImageAndAddAlphaChannel(CGImageRef sourceImage) {
     return rect;
 }
 
-+ (void) centerView:(UIView *)view horizontallyInView:(UIView*)view2
++ (void) centerView:(UIView *)view horizontallyInFrame:(CGRect)frame
 {
-    CGRect newFrame = [self centerRect:view.frame horizontallyInRect:view2.frame];
+    CGRect newFrame = [self centerRect:view.frame horizontallyInRect:frame];
     view.frame = newFrame;
 }
 
-+ (void) centerView:(UIView *)view verticallyInView:(UIView*)view2
++ (void) centerView:(UIView *)view verticallyInFrame:(CGRect)frame
 {
-    CGRect newFrame = [self centerRect:view.frame verticallyInRect:view2.frame];
+    CGRect newFrame = [self centerRect:view.frame verticallyInRect:frame];
     view.frame = newFrame;
 }
 
-+ (void) centerView:(UIView*)view inView:(UIView*)view2
++ (void) centerView:(UIView*)view inFrame:(CGRect)frame
 {
-    [self centerView:view horizontallyInView:view2];
-    [self centerView:view verticallyInView:view2];
+    [self centerView:view horizontallyInFrame:frame];
+    [self centerView:view verticallyInFrame:frame];
 }
 
 + (CGRect) centerRect:(CGRect)rect inRect:(CGRect)parentRect
