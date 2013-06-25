@@ -6,33 +6,10 @@
 //  Copyright 2011 Go1 Pty Ltd. All rights reserved.
 //
 
-#ifndef SITE_URL
-#define SITE_URL @""
-#endif
-
-#ifdef DEBUG
-#	define DLog(fmt, ...) NSLog((@"%s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
-#	define DLog1(fmt, ...) {static __dlog1_once = true; if (__dlog1_once) { NSLog((@"%s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__); __dlog1_once = false; } }
-#else
-#	define DLog(...)
-#	define DLog1(...)
-#endif
-
-#define DLogC(is_active,fmt, ...) {if (is_active) { DLog(fmt, ##__VA_ARGS__); } }
-
-// ALog always displays output regardless of the DEBUG setting
-#define ALog(fmt, ...) NSLog((@"%s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
-
-#ifdef UI_USER_INTERFACE_IDIOM
-#define IS_IPAD() (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-#define _IPHONESDK3_2
-#else
-#define IS_IPAD() (false)
-#endif
-
 #import <Foundation/Foundation.h>
 #import <CommonCrypto/CommonDigest.h>
 #import <MapKit/MapKit.h>
+#import "WDMapView.h"
 
 @interface PDUtilities : NSObject <UIAlertViewDelegate> {
 
@@ -74,18 +51,19 @@
 + (NSMutableURLRequest*) getURLRequestForPath:(NSString*)path args:(NSDictionary*)args method:(NSString*)httpMethod;
 + (NSMutableURLRequest*) getURLRequestForURL:(NSString*)url args:(NSDictionary*)args method:(NSString*)httpMethod useMultipart:(BOOL)multipart;
 + (NSString*) truncateString:(NSString*)string toLength:(int)length;
-+ (void)zoomMapToFitAnnotations:(MKMapView*)mapView;
++ (void)zoomMapToFitAnnotations:(WDMapView*)mapView;
 + (NSString*) getLocalizedDateStringForDate:(NSDate*)date;
 + (void) showComingSoonAlert;
++ (UIImage*) maskImage:(UIImage *)image withMask:(UIImage *)maskImage;
++ (UIImage*) maskImage:(UIImage *)image andResizeMask:(UIImage *)maskImage;
 + (NSString*)timeIntervalStringWithStartDate:(NSDate*)d1 withEndDate:(NSDate*)d2;
 + (int) convertFloatToEvenInt:(CGFloat)float_num;
-+ (void) zoomMapToUserLocation:(MKMapView*)mapView;
-+ (void)zoomMapToFitAnnotations:(MKMapView*)mapView horizontalPadding:(float) horizontalPadding verticalPadding:(float) verticalPadding animated:(BOOL)animated;
 + (NSDictionary *)parseURLParams:(NSString *)query;
-+ (void) centerView:(UIView *)view horizontallyInFrame:(CGRect)frame;
-+ (void) centerView:(UIView *)view verticallyInFrame:(CGRect)frame;
-+ (void) centerView:(UIView*)view inFrame:(CGRect)frame;
++ (void) centerView:(UIView *)view horizontallyInView:(UIView*)view2;
++ (void) centerView:(UIView *)view verticallyInView:(UIView*)view2;
++ (void) centerView:(UIView*)view inView:(UIView*)view2;
 + (CGRect) centerRect:(CGRect)rect inRect:(CGRect)parentRect;
 + (NSDictionary*) getArgsDictionaryFromPOSTMethodsString:(NSString*)string;
++ (NSString*) sendRequestReturningStringToPath:(NSString*)path withArgs:(NSDictionary*) args method:(NSString*)httpMethod;
 
 @end
