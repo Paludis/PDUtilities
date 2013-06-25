@@ -139,16 +139,30 @@ static PDUtilities* sharedInstance = nil;
     return urlData;
 }
 
-+ (NSData*) sendRequestToURL:(NSString*)url withArgs:(NSDictionary*)args method:(NSString*)httpMethod
++ (NSData*) sendRequestToURL:(NSString*)url withArgs:(NSDictionary*)args method:(NSString*)httpMethod returningResponse:(NSHTTPURLResponse**)response error:(NSError**)error
 {
-    
-    NSURLRequest* request = [self getURLRequestForURL:url args:args method:httpMethod useMultipart:YES];
-    NSData* urlData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+    return [self sendRequestToURL:url withArgs:args headers:nil method:httpMethod returningResponse:response error:error];
+}
+
++ (NSData*) sendRequestToURL:(NSString*)url withArgs:(NSDictionary*)args headers:(NSDictionary*)headers method:(NSString*)httpMethod returningResponse:(NSHTTPURLResponse**)response error:(NSError**)error
+{
+    NSMutableURLRequest* request = [[self getURLRequestForURL:url args:args method:httpMethod useMultipart:NO] mutableCopy];
+    for (NSString* key in [headers allKeys])
+    {
+        [request addValue:[headers objectForKey:key] forHTTPHeaderField:key];
+    }
+    NSData* urlData = [NSURLConnection sendSynchronousRequest:request returningResponse:response error:error];
     return urlData;
 }
 
 + (NSMutableURLRequest*) getURLRequestForURL:(NSString*)url args:(NSDictionary*)args method:(NSString*)httpMethod useMultipart:(BOOL)multipart
 {
+    if ([httpMethod isEqualToString:@"GET"])
+    {
+        NSString* getBody = [[self getPOSTMethodsStringFromDictionary:args] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        url = [url stringByAppendingFormat:@"?%@", getBody];
+    }
+    
 #ifdef _GSREQUESTCOMMS
 	DLog(@"request URL: %@", url);
 #endif // _COMMSTRACE
@@ -178,7 +192,7 @@ static PDUtilities* sharedInstance = nil;
 //        [request setValue:[NSString stringWithFormat:@"%i", [reqData length]] forHTTPHeaderField:@"Content-Length"];
 //        [request setHTTPBody:reqData];
     }
-    else
+    else if (![httpMethod isEqualToString:@"GET"])
     {
         NSString* postbody = [[self getPOSTMethodsStringFromDictionary:args] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 #ifdef _GSREQUESTCOMMS
@@ -224,16 +238,26 @@ static PDUtilities* sharedInstance = nil;
     NSString* methodsString = @"";
     
     if (dictionary){
-                
-        int i = 0;
-        
-        for (NSString* key in [dictionary allKeys]){
-            NSString* ampersand = @"&";
-            if (i == 0){
-                ampersand = @"";
+                        
+        NSString* ampersand = @"";      // start off blank because we don't want an ampersand at the start.
+
+        for (NSString* key in [dictionary allKeys])
+        {
+            id value = [dictionary objectForKey:key];
+            if ([value isKindOfClass:[NSString class]])
+            {
+                methodsString = [methodsString stringByAppendingFormat:@"%@%@=%@", ampersand, key, value];
             }
-            methodsString = [methodsString stringByAppendingFormat:@"%@%@=%@", ampersand, key, [dictionary objectForKey:key]];
-            i++;
+            else if ([value isKindOfClass:[NSDictionary class]])
+            {
+                //for nested params
+                for (NSString* paramKey in [value allKeys])
+                {
+                    methodsString = [methodsString stringByAppendingFormat:@"%@%@[%@]=%@", ampersand, key, paramKey, [value objectForKey:paramKey]];
+                    ampersand = @"&";
+                }
+            }
+            ampersand = @"&";
         }
     }
 
