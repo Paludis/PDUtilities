@@ -34,6 +34,10 @@
 #define IS_IPAD() (false)
 #endif
 
+#ifndef kStandardErrorDomain
+#define kStandardErrorDomain @"1234"
+#endif
+
 
 @interface PDUtilities : NSObject <UIAlertViewDelegate> {
 
@@ -86,5 +90,6 @@
 + (CGRect) centerRect:(CGRect)rect inRect:(CGRect)parentRect;
 + (NSDictionary*) getArgsDictionaryFromPOSTMethodsString:(NSString*)string;
 + (NSString*) sendRequestReturningStringToPath:(NSString*)path withArgs:(NSDictionary*) args method:(NSString*)httpMethod;
++ (NSError*) errorWithCode:(int)code title:(NSString*)title message:(NSString*)message;
 
 @end

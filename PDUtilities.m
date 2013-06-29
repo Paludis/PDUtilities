@@ -719,4 +719,12 @@ CGImageRef CopyImageAndAddAlphaChannel(CGImageRef sourceImage) {
     return centeredRect;
 }
 
++ (NSError*) errorWithCode:(int)code title:(NSString*)title message:(NSString*)message
+{
+    NSMutableDictionary* errorInfo = [NSMutableDictionary new];
+    [errorInfo setObject:title forKey:NSLocalizedFailureReasonErrorKey];
+    [errorInfo setObject:message forKey:NSLocalizedDescriptionKey];
+    return [[NSError alloc] initWithDomain:kStandardErrorDomain code:code userInfo:errorInfo];
+}
+
 @end
