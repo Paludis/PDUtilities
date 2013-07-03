@@ -76,7 +76,7 @@
 + (NSData*) sendRequestToPath:(NSString*)path withArgs:(NSDictionary*)args method:(NSString*)httpMethod;
 + (NSData*) sendRequestToURL:(NSString*)url withArgs:(NSDictionary*)args method:(NSString*)httpMethod returningResponse:(NSHTTPURLResponse**)response error:(NSError**)error;
 + (NSData*) sendRequestToURL:(NSString*)url withArgs:(NSDictionary*)args headers:(NSDictionary*)headers method:(NSString*)httpMethod returningResponse:(NSHTTPURLResponse**)response error:(NSError**)error;
-+ (NSMutableURLRequest*) getURLRequestForPath:(NSString*)path args:(NSDictionary*)args method:(NSString*)httpMethod;
++ (NSMutableURLRequest*) getURLRequestForURL:(NSString*)path args:(NSDictionary*)args method:(NSString*)httpMethod;
 + (NSMutableURLRequest*) getURLRequestForURL:(NSString*)url args:(NSDictionary*)args method:(NSString*)httpMethod useMultipart:(BOOL)multipart;
 + (NSString*) truncateString:(NSString*)string toLength:(int)length;
 + (NSString*) getLocalizedDateStringForDate:(NSDate*)date;

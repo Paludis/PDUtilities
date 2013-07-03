@@ -160,7 +160,7 @@ static PDUtilities* sharedInstance = nil;
 + (NSData*) sendRequestToPath:(NSString*)path withArgs:(NSDictionary*)args method:(NSString*)httpMethod
 {
 
-    NSURLRequest* request = [self getURLRequestForPath:path args:args method:httpMethod];
+    NSURLRequest* request = [self getURLRequestForURL:path args:args method:httpMethod];
     
     DLog(@"request URL: %@", request.URL.absoluteString);
     
@@ -232,10 +232,10 @@ static PDUtilities* sharedInstance = nil;
     return request;
 }
 
-+ (NSMutableURLRequest*) getURLRequestForPath:(NSString*)path args:(NSDictionary*)args method:(NSString*)httpMethod {
++ (NSMutableURLRequest*) getURLRequestForURL:(NSString*)path args:(NSDictionary*)args method:(NSString*)httpMethod {
     
     NSString* fullURL = [path stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    return [self getURLRequestForURL:fullURL args:args method:httpMethod useMultipart:YES];
+    return [self getURLRequestForURL:fullURL args:args method:httpMethod useMultipart:NO];
 }
 
 + (NSString*) sendRequestReturningStringToPath:(NSString*)path withArgs:(NSDictionary*) args method:(NSString*)httpMethod
