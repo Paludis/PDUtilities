@@ -234,8 +234,8 @@ static PDUtilities* sharedInstance = nil;
 
 + (NSMutableURLRequest*) getURLRequestForURL:(NSString*)path args:(NSDictionary*)args method:(NSString*)httpMethod {
     
-    NSString* fullURL = [path stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    return [self getURLRequestForURL:fullURL args:args method:httpMethod useMultipart:NO];
+    //NSString* fullURL = [path stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    return [self getURLRequestForURL:path args:args method:httpMethod useMultipart:NO];
 }
 
 + (NSString*) sendRequestReturningStringToPath:(NSString*)path withArgs:(NSDictionary*) args method:(NSString*)httpMethod
