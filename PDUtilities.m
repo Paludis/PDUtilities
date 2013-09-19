@@ -186,7 +186,7 @@ static PDUtilities* sharedInstance = nil;
 
 + (NSMutableURLRequest*) getURLRequestForURL:(NSString*)url args:(NSDictionary*)args method:(NSString*)httpMethod useMultipart:(BOOL)multipart
 {
-    if ([httpMethod isEqualToString:@"GET"])
+    if ([httpMethod isEqualToString:@"GET"] || [httpMethod isEqualToString:@"DELETE"])
     {
         NSString* getBody = [[self getPOSTMethodsStringFromDictionary:args] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
         url = [url stringByAppendingFormat:@"?%@", getBody];
@@ -221,7 +221,7 @@ static PDUtilities* sharedInstance = nil;
 //        [request setValue:[NSString stringWithFormat:@"%i", [reqData length]] forHTTPHeaderField:@"Content-Length"];
 //        [request setHTTPBody:reqData];
     }
-    else if (![httpMethod isEqualToString:@"GET"])
+    else if (![httpMethod isEqualToString:@"GET"] && ![httpMethod isEqualToString:@"DELETE"])
     {
         NSString* postbody = [[self getPOSTMethodsStringFromDictionary:args] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 #ifdef _GSREQUESTCOMMS
