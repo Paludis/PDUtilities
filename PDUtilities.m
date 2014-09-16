@@ -773,4 +773,11 @@ CGImageRef CopyImageAndAddAlphaChannel(CGImageRef sourceImage) {
     return newImage;
 }
 
++ (void) showAlertForError:(NSError*)error
+{
+    NSString* title = error.localizedFailureReason ? error.localizedFailureReason : @"Error";
+    NSString* message = error.localizedDescription;
+    [PDUtilities showAlertWithTitle:title message:message];
+}
+
 @end

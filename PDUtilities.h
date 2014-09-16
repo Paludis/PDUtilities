@@ -92,5 +92,6 @@
 + (NSString*) sendRequestReturningStringToPath:(NSString*)path withArgs:(NSDictionary*) args method:(NSString*)httpMethod;
 + (NSError*) errorWithCode:(int)code title:(NSString*)title message:(NSString*)message;
 + (UIImage*)circularScaleNCrop:(UIImage*)image andRect:(CGRect)rect;
++ (void) showAlertForError:(NSError*)error;
 
 @end
