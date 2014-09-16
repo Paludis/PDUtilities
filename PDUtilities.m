@@ -127,7 +127,7 @@ static PDUtilities* sharedInstance = nil;
         CGSize constraintSize = CGSizeMake(aLabel.frame.size.width, MAXFLOAT);
         
         // This step checks how tall the label would be with the desired font.
-        CGSize labelSize = [aLabel.text sizeWithFont:font constrainedToSize:constraintSize lineBreakMode:UILineBreakModeWordWrap];
+        CGSize labelSize = [aLabel.text sizeWithFont:font constrainedToSize:constraintSize lineBreakMode:NSLineBreakByWordWrapping];
         if(labelSize.height <= aLabel.frame.size.height)
             break;
     }
