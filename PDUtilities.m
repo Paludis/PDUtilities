@@ -9,6 +9,7 @@
 #import "PDUtilities.h"
 #import <CommonCrypto/CommonHMAC.h>
 #import "Common.h"
+#include <math.h>
 
 #ifndef SITE_URL
 #define SITE_URL @""
@@ -37,7 +38,6 @@
 static PDUtilities* sharedInstance = nil;
 
 @implementation PDUtilities
-
 
 + (id)allocWithZone:(NSZone *)zone
 {
@@ -724,8 +724,6 @@ CGImageRef CopyImageAndAddAlphaChannel(CGImageRef sourceImage) {
     [errorInfo setObject:message forKey:NSLocalizedDescriptionKey];
     return [[NSError alloc] initWithDomain:kStandardErrorDomain code:code userInfo:errorInfo];
 }
-
-#include <math.h>
 
 + (UIImage*)circularScaleNCrop:(UIImage*)image andRect:(CGRect)rect
 {
