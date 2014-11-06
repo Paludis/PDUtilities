@@ -8,7 +8,8 @@
 
 #import "PDUtilities.h"
 #import <CommonCrypto/CommonHMAC.h>
-#import "Common.h"
+//#import "Common.h"
+#include <math.h>
 
 #ifndef SITE_URL
 #define SITE_URL @""
@@ -39,7 +40,6 @@
 static PDUtilities* sharedInstance = nil;
 
 @implementation PDUtilities
-
 
 + (id)allocWithZone:(NSZone *)zone
 {
@@ -129,7 +129,7 @@ static PDUtilities* sharedInstance = nil;
         CGSize constraintSize = CGSizeMake(aLabel.frame.size.width, MAXFLOAT);
         
         // This step checks how tall the label would be with the desired font.
-        CGSize labelSize = [aLabel.text sizeWithFont:font constrainedToSize:constraintSize lineBreakMode:UILineBreakModeWordWrap];
+        CGSize labelSize = [aLabel.text sizeWithFont:font constrainedToSize:constraintSize lineBreakMode:NSLineBreakByWordWrapping];
         if(labelSize.height <= aLabel.frame.size.height)
             break;
     }
@@ -732,9 +732,6 @@ CGImageRef CopyImageAndAddAlphaChannel(CGImageRef sourceImage) {
     return [[NSError alloc] initWithDomain:kStandardErrorDomain code:code userInfo:errorInfo];
 }
 
-
-
-
 + (UIImage*)circularScaleNCrop:(UIImage*)image andRect:(CGRect)rect
 {
     // This function returns a newImage, based on image, that has been:
@@ -779,6 +776,55 @@ CGImageRef CopyImageAndAddAlphaChannel(CGImageRef sourceImage) {
     UIGraphicsEndImageContext();
     
     return newImage;
+}
+
++ (void) showAlertForError:(NSError*)error
+{
+    NSString* title = error.localizedFailureReason ? error.localizedFailureReason : @"Error";
+    NSString* message = error.localizedDescription;
+    [PDUtilities showAlertWithTitle:title message:message];
+}
+
++ (void) addConstraintsForSubview:(UIView*)subView toFillSuperView:(UIView*)superView
+{
+    NSLayoutConstraint* width = [NSLayoutConstraint constraintWithItem:subView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:superView attribute:NSLayoutAttributeWidth multiplier:1 constant:0];
+    NSLayoutConstraint* height = [NSLayoutConstraint constraintWithItem:subView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:superView attribute:NSLayoutAttributeHeight multiplier:1 constant:0];
+    [PDUtilities addConstraintsForSubview:subView toFillSuperViewHorizontally:superView];
+    [PDUtilities addConstraintsForSubview:subView toFillSuperViewVertically:superView];
+    [superView addConstraints:@[width, height]];
+}
+
++ (void) addConstraintsForSubview:(UIView *)subView toFillSuperViewHorizontally:(UIView *)superView
+{
+    [PDUtilities addLeadingConstraintForSubView:subView superView:superView];
+    NSLayoutConstraint* trailing = [NSLayoutConstraint constraintWithItem:subView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:superView attribute:NSLayoutAttributeTrailing multiplier:1 constant:0];
+    [superView addConstraints:@[trailing]];
+}
+
++ (void) addConstraintsForSubview:(UIView *)subView toFillSuperViewVertically:(UIView *)superView
+{
+    NSLayoutConstraint* top = [NSLayoutConstraint constraintWithItem:subView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:superView attribute:NSLayoutAttributeTop multiplier:1 constant:0];
+    [PDUtilities addBottomConstraintForSubView:subView superView:superView];
+    [superView addConstraints:@[top]];
+}
+
++ (void) addBottomConstraintForSubView:(UIView*)subView superView:(UIView*)superView
+{
+    NSLayoutConstraint* bottom = [NSLayoutConstraint constraintWithItem:subView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:superView attribute:NSLayoutAttributeBottom multiplier:1 constant:0];
+    [superView addConstraint:bottom];
+}
+
++ (void) addLeadingConstraintForSubView:(UIView*)subView superView:(UIView*)superView
+{
+    NSLayoutConstraint* leading = [NSLayoutConstraint constraintWithItem:subView attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:superView attribute:NSLayoutAttributeLeading multiplier:1 constant:0];
+    [superView addConstraint:leading];
+}
+
++ (void) circularCrop:(UIView*)view
+{
+    view.layer.cornerRadius = view.frame.size.height / 2;
+    view.layer.masksToBounds = true;
+    view.layer.borderWidth = 0;
 }
 
 @end

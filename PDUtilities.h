@@ -93,5 +93,12 @@
 + (NSString*) sendRequestReturningStringToPath:(NSString*)path withArgs:(NSDictionary*) args method:(NSString*)httpMethod;
 + (NSError*) errorWithCode:(int)code title:(NSString*)title message:(NSString*)message;
 + (UIImage*)circularScaleNCrop:(UIImage*)image andRect:(CGRect)rect;
++ (void) showAlertForError:(NSError*)error;
++ (void) addConstraintsForSubview:(UIView*)subView toFillSuperView:(UIView*)superView;
++ (void) addConstraintsForSubview:(UIView *)subView toFillSuperViewHorizontally:(UIView *)superView;
++ (void) addConstraintsForSubview:(UIView *)subView toFillSuperViewVertically:(UIView *)superView;
++ (void) addBottomConstraintForSubView:(UIView*)subView superView:(UIView*)superView;
++ (void) addLeadingConstraintForSubView:(UIView*)subView superView:(UIView*)superView;
++ (void) circularCrop:(UIView*)view;
 
 @end

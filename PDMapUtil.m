@@ -79,4 +79,20 @@
     }
 }
 
++ (BOOL) regionIsValid:(MKCoordinateRegion)region
+{
+    // check for sane span values
+    if (region.span.latitudeDelta <= 0.0f || region.span.longitudeDelta <= 0.0f)
+    {
+        return false;
+    }
+    // check for sane center values
+    if (region.center.latitude > 90.0f || region.center.latitude < -90.0f ||
+        region.center.longitude > 360.0f || region.center.longitude < -180.0f
+        ) {
+        return false;
+    }
+    return true;
+}
+
 @end

@@ -14,5 +14,6 @@
 + (void) zoomMapToUserLocation:(MKMapView*)mapView;
 + (void)zoomMapToFitAnnotations:(MKMapView*)mapView;
 + (void)zoomMapToFitAnnotations:(MKMapView*)mapView horizontalPadding:(float) horizontalPadding verticalPadding:(float) verticalPadding minimumLatitudeSpan:(float)minLatSpan animated:(BOOL)animated;
++ (BOOL) regionIsValid:(MKCoordinateRegion)region;
 
 @end

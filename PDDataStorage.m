@@ -26,7 +26,7 @@ static PDDataStorage* sharedInstance = nil;
         
         storageDict = [NSKeyedUnarchiver unarchiveObjectWithFile:[PDUtilities getFilePathForFileInDocumentsDirectory:kFilename]];
         
-        if (storageDict == nil){
+        if (storageDict == nil) {
             storageDict = [NSMutableDictionary new];
         }
     }
