@@ -34,6 +34,8 @@
 #define IS_IPAD() (false)
 #endif
 
+#include <math.h>
+
 static PDUtilities* sharedInstance = nil;
 
 @implementation PDUtilities
@@ -144,9 +146,7 @@ static PDUtilities* sharedInstance = nil;
     for (int i = 0; i < 16; i++)
         [hash appendFormat:@"%02X", result[i]];
     return [hash lowercaseString];
-    
 }
-
 
 + (NSString*) getFilePathForFileInDocumentsDirectory:(NSString*)filename{
     
@@ -157,7 +157,6 @@ static PDUtilities* sharedInstance = nil;
 
 + (NSData*) sendRequestToPath:(NSString*)path withArgs:(NSDictionary*)args method:(NSString*)httpMethod
 {
-
     NSURLRequest* request = [self getURLRequestForURL:path args:args method:httpMethod];
     
     DLog(@"request URL: %@", request.URL.absoluteString);
@@ -184,6 +183,11 @@ static PDUtilities* sharedInstance = nil;
 
 + (NSMutableURLRequest*) getURLRequestForURL:(NSString*)url args:(NSDictionary*)args method:(NSString*)httpMethod useMultipart:(BOOL)multipart
 {
+    return [self getURLRequestForURL:url args:args method:httpMethod useMultipart:multipart useCache:NO];
+}
+
++ (NSMutableURLRequest*) getURLRequestForURL:(NSString*)url args:(NSDictionary*)args method:(NSString*)httpMethod useMultipart:(BOOL)multipart useCache:(BOOL)useCache
+{
     if ([httpMethod isEqualToString:@"GET"] || [httpMethod isEqualToString:@"DELETE"])
     {
         NSString* getBody = [[self getPOSTMethodsStringFromDictionary:args] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
@@ -194,7 +198,12 @@ static PDUtilities* sharedInstance = nil;
 	DLog(@"request URL: %@", url);
 #endif // _COMMSTRACE
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
-    [request setCachePolicy:NSURLRequestReloadIgnoringLocalCacheData];
+    
+    if (!useCache)
+    {
+        [request setCachePolicy:NSURLRequestReloadIgnoringLocalCacheData];
+    }
+    
     [request setTimeoutInterval:30];
     
 #ifdef _GSREQUESTCOMMS
@@ -231,8 +240,6 @@ static PDUtilities* sharedInstance = nil;
 }
 
 + (NSMutableURLRequest*) getURLRequestForURL:(NSString*)path args:(NSDictionary*)args method:(NSString*)httpMethod {
-    
-    //NSString* fullURL = [path stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     return [self getURLRequestForURL:path args:args method:httpMethod useMultipart:NO];
 }
 
@@ -725,7 +732,8 @@ CGImageRef CopyImageAndAddAlphaChannel(CGImageRef sourceImage) {
     return [[NSError alloc] initWithDomain:kStandardErrorDomain code:code userInfo:errorInfo];
 }
 
-#include <math.h>
+
+
 
 + (UIImage*)circularScaleNCrop:(UIImage*)image andRect:(CGRect)rect
 {
