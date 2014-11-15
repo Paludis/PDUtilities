@@ -99,5 +99,8 @@
 + (void) addBottomConstraintForSubView:(UIView*)subView superView:(UIView*)superView;
 + (void) addLeadingConstraintForSubView:(UIView*)subView superView:(UIView*)superView;
 + (void) circularCrop:(UIView*)view;
++ (void) locationFromImagePickerInfo:(NSDictionary*)info completion:(void (^)(CLLocation* location))completionBlock;
++ (NSString*) addressStringFromPlacemark:(CLPlacemark*)placemark;
++ (void) addressStringFromLocation:(CLLocation*)location completion:(void (^)(NSString* address))completionBlock;
 
 @end

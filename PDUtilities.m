@@ -10,6 +10,9 @@
 #import <CommonCrypto/CommonHMAC.h>
 //#import "Common.h"
 #include <math.h>
+#import <AssetsLibrary/AssetsLibrary.h>
+#import <AddressBook/AddressBook.h>
+#import <AddressBookUI/AddressBookUI.h>
 
 #ifndef SITE_URL
 #define SITE_URL @""
@@ -818,6 +821,54 @@ CGImageRef CopyImageAndAddAlphaChannel(CGImageRef sourceImage) {
     view.layer.cornerRadius = view.frame.size.height / 2;
     view.layer.masksToBounds = true;
     view.layer.borderWidth = 0;
+}
+
++ (void) locationFromImagePickerInfo:(NSDictionary*)info completion:(void (^)(CLLocation* location))completionBlock
+{
+    // Get the asset url
+    NSURL *url = [info objectForKey:UIImagePickerControllerReferenceURL];
+    
+    // We need to use blocks. This block will handle the ALAsset that's returned:
+    ALAssetsLibraryAssetForURLResultBlock resultblock = ^(ALAsset *myasset)
+    {
+        // Get the location property from the asset
+        CLLocation *location = [myasset valueForProperty:ALAssetPropertyLocation];
+        
+        completionBlock(location);
+    };
+    // This block will handle errors:
+    ALAssetsLibraryAccessFailureBlock failureblock  = ^(NSError *myerror)
+    {
+        NSLog(@"Can not get asset - %@",[myerror localizedDescription]);
+        // Do something to handle the error
+        
+        completionBlock(nil);
+    };
+    
+    
+    // Use the url to get the asset from ALAssetsLibrary,
+    // the blocks that we just created will handle results
+    ALAssetsLibrary* assetslibrary = [ALAssetsLibrary new];
+    [assetslibrary assetForURL:url
+                   resultBlock:resultblock
+                  failureBlock:failureblock];
+}
+
++ (NSString*) addressStringFromPlacemark:(CLPlacemark*)placemark
+{
+    return ABCreateStringWithAddressDictionary(placemark.addressDictionary, true);
+}
+
++ (void) addressStringFromLocation:(CLLocation*)location completion:(void (^)(NSString* address))completionBlock
+{
+    CLGeocoder* geocoder = [CLGeocoder new];
+    [geocoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
+        if (placemarks.count > 0)
+        {
+            CLPlacemark* pm = [placemarks firstObject];
+            completionBlock([self addressStringFromPlacemark:pm]);
+        }
+    }];
 }
 
 @end
