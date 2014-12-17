@@ -59,6 +59,7 @@
 + (PDUtilities*) sharedUtilities;
 + (NSString *) returnMD5Hash:(NSString*)concat;
 + (void)resizeFontForLabel:(UILabel*)aLabel maxSize:(int)maxSize minSize:(int)minSize;
++ (NSString*) getDocumentsDirectoryPath;
 + (NSString*) getFilePathForFileInDocumentsDirectory:(NSString*)filename;
 + (NSString*) sendRequestReturningStringToPath:(NSString*)path withArgs:(NSDictionary*) args;
 + (NSString *)generateSHA256Hash:(NSString *)inputString usingKey:(NSString*)key;

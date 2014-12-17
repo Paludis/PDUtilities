@@ -150,6 +150,11 @@ static PDUtilities* sharedInstance = nil;
     
 }
 
++ (NSString*) getDocumentsDirectoryPath
+{
+    NSString* docsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    return docsPath;
+}
 
 + (NSString*) getFilePathForFileInDocumentsDirectory:(NSString*)filename{
     
@@ -723,8 +728,14 @@ CGImageRef CopyImageAndAddAlphaChannel(CGImageRef sourceImage) {
 + (NSError*) errorWithCode:(int)code title:(NSString*)title message:(NSString*)message
 {
     NSMutableDictionary* errorInfo = [NSMutableDictionary new];
-    [errorInfo setObject:title forKey:NSLocalizedFailureReasonErrorKey];
-    [errorInfo setObject:message forKey:NSLocalizedDescriptionKey];
+    if (title != nil)
+    {
+        [errorInfo setObject:title forKey:NSLocalizedFailureReasonErrorKey];
+    }
+    if (message != nil)
+    {
+        [errorInfo setObject:message forKey:NSLocalizedDescriptionKey];
+    }
     return [[NSError alloc] initWithDomain:kStandardErrorDomain code:code userInfo:errorInfo];
 }
 
