@@ -13,6 +13,7 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <AddressBook/AddressBook.h>
 #import <AddressBookUI/AddressBookUI.h>
+#include <sys/utsname.h>
 
 #ifndef SITE_URL
 #define SITE_URL @""
@@ -880,6 +881,13 @@ CGImageRef CopyImageAndAddAlphaChannel(CGImageRef sourceImage) {
             completionBlock([self addressStringFromPlacemark:pm]);
         }
     }];
+}
+
++ (NSString*) getDeviceName
+{
+    struct utsname u;
+    uname( &u );    // u.machine could be "i386" for the simulator, "iPod1,1" on iPod Touch, "iPhone1,1" on iPhone V1 & "iPhone1,2" on iPhone3G
+    return [NSString stringWithCString:u.machine encoding:NSASCIIStringEncoding];
 }
 
 @end
