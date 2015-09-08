@@ -890,4 +890,30 @@ CGImageRef CopyImageAndAddAlphaChannel(CGImageRef sourceImage) {
     return [NSString stringWithCString:u.machine encoding:NSASCIIStringEncoding];
 }
 
++ (UIImage*) resizeImage:(UIImage*)image toMaximumWidth:(CGFloat)maxWidth
+{
+    float actualHeight = image.size.height;
+    float actualWidth = image.size.width;
+    float imgRatio = actualWidth/actualHeight;
+    
+    if (actualWidth > maxWidth)
+    {
+        float targetWidth = maxWidth;
+        float targetHeight = maxWidth / imgRatio;
+        CGRect rect = CGRectMake(0.0, 0.0, targetWidth, targetHeight);
+        UIGraphicsBeginImageContext(rect.size);
+        [image drawInRect:rect];
+        UIImage *img = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        
+        DLog("resized img to %fx%f", img.size.width, img.size.height);
+        
+        return img;
+    }
+    else
+    {
+        return image;
+    }
+}
+
 @end

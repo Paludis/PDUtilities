@@ -104,5 +104,6 @@
 + (NSString*) addressStringFromPlacemark:(CLPlacemark*)placemark;
 + (void) addressStringFromLocation:(CLLocation*)location completion:(void (^)(NSString* address))completionBlock;
 + (NSString*) getDeviceName;
++ (UIImage*) resizeImage:(UIImage*)image toMaximumWidth:(CGFloat)maxWidth;
 
 @end
