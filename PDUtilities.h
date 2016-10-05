@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <CommonCrypto/CommonDigest.h>
 #import <MapKit/MapKit.h>
+#import <StoreKit/StoreKit.h>
 
 #ifndef SITE_URL
 #define SITE_URL @""
@@ -38,13 +39,18 @@
 #define kStandardErrorDomain @"1234"
 #endif
 
+typedef void (^PDUtilitiesIAPCompletionBlock)(SKRequest* request);
+typedef void (^PDUtilitiesIAPFailureBlock)(NSError* error);
 
-@interface PDUtilities : NSObject <UIAlertViewDelegate> {
+@interface PDUtilities : NSObject <UIAlertViewDelegate, SKRequestDelegate> {
 
     int indicatorCount;
     BOOL alertShowing;
     
     NSMutableDictionary* alertTags;
+    
+    PDUtilitiesIAPCompletionBlock refreshIAPCompletionBlock;
+    PDUtilitiesIAPFailureBlock refreshIAPFailureBlock;
 }
 
 #define kConnectionErrorTag 148194
@@ -54,6 +60,7 @@
 - (void) changeNetworkIndicator;
 - (void) showConnectionError;   // only shows one alert at once so that connection errors don't stack up.
 - (void) showAlertWithTitle:(NSString*)title message:(NSString*)message tag:(int)tag;
+- (void) refreshIAPReceiptCompletion:(PDUtilitiesIAPCompletionBlock)completionBlock failure:(PDUtilitiesIAPFailureBlock)failureBlock;
 
 // static methods
 + (PDUtilities*) sharedUtilities;
@@ -105,5 +112,6 @@
 + (void) addressStringFromLocation:(CLLocation*)location completion:(void (^)(NSString* address))completionBlock;
 + (NSString*) getDeviceName;
 + (UIImage*) resizeImage:(UIImage*)image toMaximumWidth:(CGFloat)maxWidth;
++ (NSString *)hmac:(NSString *)plaintext withKey:(NSString *)key;
 
 @end

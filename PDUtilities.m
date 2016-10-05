@@ -7,13 +7,12 @@
 //
 
 #import "PDUtilities.h"
-#import <CommonCrypto/CommonHMAC.h>
-//#import "Common.h"
 #include <math.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <AddressBook/AddressBook.h>
 #import <AddressBookUI/AddressBookUI.h>
 #include <sys/utsname.h>
+#import <CommonCrypto/CommonCrypto.h>
 
 #ifndef SITE_URL
 #define SITE_URL @""
@@ -914,6 +913,47 @@ CGImageRef CopyImageAndAddAlphaChannel(CGImageRef sourceImage) {
     {
         return image;
     }
+}
+
+- (void) refreshIAPReceiptCompletion:(PDUtilitiesIAPCompletionBlock)completionBlock failure:(PDUtilitiesIAPFailureBlock)failureBlock
+{
+    SKRequest* request = [[SKReceiptRefreshRequest alloc] init];
+    request.delegate = self;
+    [request start];
+    refreshIAPCompletionBlock = completionBlock;
+    refreshIAPFailureBlock = failureBlock;
+}
+
+- (void) requestDidFinish:(SKRequest *)request
+{
+    if (refreshIAPCompletionBlock)
+    {
+        refreshIAPCompletionBlock(request);
+    }
+}
+
+- (void) request:(SKRequest *)request didFailWithError:(NSError *)error
+{
+    if (refreshIAPFailureBlock)
+    {
+        refreshIAPFailureBlock(error);
+    }
+}
+
++ (NSString *)hmac:(NSString *)plaintext withKey:(NSString *)key
+{
+    const char *cKey  = [key cStringUsingEncoding:NSUTF8StringEncoding];
+    const char *cData = [plaintext cStringUsingEncoding:NSUTF8StringEncoding];
+    unsigned char cHMAC[CC_SHA256_DIGEST_LENGTH];
+    CCHmac(kCCHmacAlgSHA256, cKey, strlen(cKey), cData, strlen(cData), cHMAC);
+    NSData *HMACData = [NSData dataWithBytes:cHMAC length:sizeof(cHMAC)];
+    const unsigned char *buffer = (const unsigned char *)[HMACData bytes];
+    NSMutableString *HMAC = [NSMutableString stringWithCapacity:HMACData.length * 2];
+    for (int i = 0; i < HMACData.length; ++i){
+        [HMAC appendFormat:@"%02x", buffer[i]];
+    }
+    
+    return HMAC;
 }
 
 @end
