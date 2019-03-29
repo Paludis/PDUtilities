@@ -794,11 +794,8 @@ CGImageRef CopyImageAndAddAlphaChannel(CGImageRef sourceImage) {
 
 + (void) addConstraintsForSubview:(UIView*)subView toFillSuperView:(UIView*)superView
 {
-    NSLayoutConstraint* width = [NSLayoutConstraint constraintWithItem:subView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:superView attribute:NSLayoutAttributeWidth multiplier:1 constant:0];
-    NSLayoutConstraint* height = [NSLayoutConstraint constraintWithItem:subView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:superView attribute:NSLayoutAttributeHeight multiplier:1 constant:0];
     [PDUtilities addConstraintsForSubview:subView toFillSuperViewHorizontally:superView];
     [PDUtilities addConstraintsForSubview:subView toFillSuperViewVertically:superView];
-    [superView addConstraints:@[width, height]];
 }
 
 + (void) addConstraintsForSubview:(UIView *)subView toFillSuperViewHorizontally:(UIView *)superView
