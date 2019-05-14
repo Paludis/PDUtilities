@@ -297,6 +297,13 @@ static PDUtilities* sharedInstance = nil;
                     ampersand = @"&";
                 }
             }
+            else if ([value isKindOfClass:[NSArray class]])
+            {
+                for (NSString* param in value) {
+                    methodsString = [methodsString stringByAppendingFormat:@"%@%@[]=%@", ampersand, key, param];
+                    ampersand = @"&";
+                }
+            }
             ampersand = @"&";
         }
     }
