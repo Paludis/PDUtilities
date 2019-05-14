@@ -15,6 +15,8 @@
 #define SITE_URL @""
 #endif
 
+#define t(string) NSLocalizedString(string, nil)
+
 #ifdef DEBUG
 #	define DLog(fmt, ...) NSLog((@"%s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
 #	define DLog1(fmt, ...) {static __dlog1_once = true; if (__dlog1_once) { NSLog((@"%s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__); __dlog1_once = false; } }
